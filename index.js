@@ -6,14 +6,16 @@
 
 var request = require('request');
 var config = require('./config');
+var category = require('./data/category');
 
+console.log(category);
 console.log(config);
 let url = config.urlPrefix;
 
 
 
-request(url, (error, response, body) => {
-    if (!error && response.statusCode == 200) {
-        console.log(body)
-    }
-});
+// request(url, (error, response, body) => {
+//     if (!error && response.statusCode == 200) {
+//         console.log(body)
+//     }
+// });

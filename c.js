@@ -9,7 +9,7 @@ const cheerio = require('cheerio');
 
 const fromFile = './data/category.html';
 const toFile = './data/category.sql';
-const linksFile = './data/category.txt';
+const linksFile = './data/category.js';
 //加载数据
 const domStr = fs.readFileSync(fromFile, 'utf8');
 const $ = cheerio.load(domStr);
@@ -103,8 +103,9 @@ function main() {
             });
         });
     });
+    let linksOutput=`module.exports=${JSON.stringify(links)};`;
     fs.writeFileSync(toFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
-    fs.writeFileSync(linksFile, JSON.stringify(links));//生成分类链接数据,用于抓取数据
+    fs.writeFileSync(linksFile, linksOutput);//生成分类链接数据,用于抓取数据
 }
 
 main();
