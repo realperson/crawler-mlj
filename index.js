@@ -7,16 +7,18 @@
 const fs = require('fs');
 const request = require('request');
 const config = require('./config');
-const categories = require('./data/category');
+const categories = require('./data/categories');
+// const categories = require('./data/category');
 const links=[];//分类链接地址
 
-categories.some((category, index) => {
-    readCategory(category);
-    if (index == 0) {
-        return true;
-    }
-    return false;
-});
+console.log(categories);
+// categories.some((category, index) => {
+//     readCategory(category);
+//     if (index == 0) {
+//         return true;
+//     }
+//     return false;
+// });
 
 /**
  * 获取分类数据
