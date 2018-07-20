@@ -9,18 +9,16 @@ const request = require('request');
 const config = require('./config');
 const categories = require('./data/category');
 
+const errorIds=[];//出错的id列表
 const links=[];//分类链接地址
 let currentCount=0;//现在获取了多少个分类的数据
 let categoryCount=categories.length;
-// categoryCount=5;
+// categoryCount=23;
 
-categories.some((category, index) => {
-    readCategory(category);
-    if (index == categoryCount-1) {
-        return true;
-    }
-    return false;
-});
+//为了防止出错,限制同时发起请求的个数
+let requestCount=0;//正在请求中的个数
+let requestLimit=10;//同时发起请求的最大个数
+let categoryIndex=0;//当前请求的分类在数组中的索引
 
 /**
  * 获取分类数据
@@ -37,6 +35,8 @@ function readCategory(category) {
             // fs.writeFileSync(config.tempFile, body);//输出分类页面数据
             processCategory(category.link, category.id, body);
         }else{
+            errorIds.push(category.id);
+            console.log(error)
             save();//保存数据
         }
     });
@@ -73,6 +73,9 @@ function processCategory(url, id, html) {
  * 保存数据
  */
 function save() {
+    if(--requestCount<0){
+        requestCount=0;
+    }
     ++currentCount;
     var t = new Date().getTime();
     // console.log(`${t}:${currentCount}`);
@@ -84,5 +87,31 @@ function save() {
         });
         let linksOutput=`module.exports=${JSON.stringify(links)};`;
         fs.writeFileSync(config.pageFile, linksOutput);//生成分类链接数据,用于抓取数据
+        if(errorIds.length>0){
+            let errorIdsOutput=`module.exports=${JSON.stringify(errorIds)};`;
+            fs.writeFileSync(config.errorCategoryFile, errorIdsOutput);//保存出错的分类id
+        }
+    }else{
+        startRequestQueue();
     }
 }
+
+/**
+ * 发起请求队列
+ */
+function startRequestQueue() {
+    while(requestCount<requestLimit&&categoryIndex<=categoryCount-1){
+        requestCount++;
+        readCategory(categories[categoryIndex]);
+        categoryIndex++;
+    }
+    // categories.some((category, index) => {
+    //     readCategory(category);
+    //     if (index == categoryCount-1) {
+    //         return true;
+    //     }
+    //     return false;
+    // });
+}
+
+startRequestQueue();
