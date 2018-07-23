@@ -35,7 +35,7 @@ function readLink(link) {
                 fs.mkdirSync('./temp');
             }
             // fs.writeFileSync(config.tempFile, body);//输出分类页面数据
-            processCategory(link.link, link.id, body);
+            processData(link.link, link.id, body);
         } else {
             errorIds.push(link);
             console.log(error)
@@ -45,11 +45,11 @@ function readLink(link) {
 }
 
 /**
- * 处理分类数据
+ * 处理数据
  * @param id 分类id
  * @param html 分类对应的html页面
  */
-function processCategory(url, id, html) {
+function processData(url, id, html) {
     let pattern = /<dt>品　　牌：<\/dt>\n.+<dd>.+>(.+)<\/a>/i;
     let match = html.match(pattern);
     if (match) {
@@ -81,6 +81,7 @@ function save() {
     links = distinct(links);
     let linksOutput = `module.exports=${JSON.stringify(links)};`;
     fs.writeFileSync(config.brandFile, linksOutput);//生成品牌数据
+    writeSql();//写入sql文件
     if (currentCount >= totalCount) {
         if (errorIds.length > 0) {
             let errorIdsOutput = `module.exports=${JSON.stringify(errorIds)};`;
@@ -89,6 +90,18 @@ function save() {
     } else {
         startRequestQueue();
     }
+}
+
+/**
+ * 写入sql文件
+ */
+function writeSql() {
+    let separator = '\n';
+    let sql = ``;//sql数据
+    links.forEach((node, index) => {
+        sql += `INSERT INTO \`ecs_brand\` VALUES ('${node.id}', '${node.name}', 'no-piture.png', '', '', '', 'http://', '50', '1');${separator}`;
+    });
+    fs.writeFileSync(config.brandSqlFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
 }
 
 /**

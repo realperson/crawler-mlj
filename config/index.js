@@ -10,6 +10,7 @@ module.exports = {
     errorCategoryFile: './data/errorCategories.js',//保存出错的分类id
     detailFile: './data/detail.js',//商品详情链接数据
     brandFile: './data/brands.js',//商品品牌数据
+    brandSqlFile: './data/brands.sql',//商品品牌数据(用于向数据库插入数据)
     errorBrandFile: './data/errorBrands.js',//商品品牌数据(出错的链接数据)
     urlPrefix: 'http://www.168mlj.com' //网站地址
 };
