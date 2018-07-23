@@ -9,5 +9,7 @@ module.exports = {
     pageFile: './data/categories.js',//分类数据(分页)
     errorCategoryFile: './data/errorCategories.js',//保存出错的分类id
     detailFile: './data/detail.js',//商品详情链接数据
+    brandFile: './data/brands.js',//商品品牌数据
+    errorBrandFile: './data/errorBrands.js',//商品品牌数据(出错的链接数据)
     urlPrefix: 'http://www.168mlj.com' //网站地址
 };

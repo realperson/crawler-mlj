@@ -12,7 +12,7 @@ const errorCategories = require('./data/errorCategories');
 const details = require('./data/detail');
 
 const errorIds=[];//出错的id列表
-const links=[...details];//商品详情链接地址
+let links=[...details];//商品详情链接地址
 let currentCount=0;//现在获取了多少个分类的数据
 categories=errorCategories;
 let categoryCount=categories.length;
@@ -100,7 +100,7 @@ function save() {
     links.sort((a,b)=>{
         return a.id-b.id;
     });
-    distinct(links);
+    links=distinct(links);
     let linksOutput=`module.exports=${JSON.stringify(links)};`;
     fs.writeFileSync(config.detailFile, linksOutput);//生成商品详情链接数据,用于抓取数据
     if(currentCount>=categoryCount){
@@ -126,6 +126,7 @@ function distinct(arr) {
         }
     });
     console.log(tempArr.length);
+    return tempArr.length===arr?arr:tempArr;
 }
 
 /**
