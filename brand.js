@@ -79,9 +79,9 @@ function save() {
         return a.id - b.id;
     });
     links = distinct(links);
+    writeSql();//写入sql文件
     let linksOutput = `module.exports=${JSON.stringify(links)};`;
     fs.writeFileSync(config.brandFile, linksOutput);//生成品牌数据
-    writeSql();//写入sql文件
     if (currentCount >= totalCount) {
         if (errorIds.length > 0) {
             let errorIdsOutput = `module.exports=${JSON.stringify(errorIds)};`;
@@ -99,6 +99,7 @@ function writeSql() {
     let separator = '\n';
     let sql = ``;//sql数据
     links.forEach((node, index) => {
+        node.id = index + 1;
         sql += `INSERT INTO \`ecs_brand\` VALUES ('${node.id}', '${node.name}', 'no-piture.png', '', '', '', 'http://', '50', '1');${separator}`;
     });
     fs.writeFileSync(config.brandSqlFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
