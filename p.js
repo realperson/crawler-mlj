@@ -32,7 +32,6 @@ let currentIndex = 0;//当前请求的分类在数组中的索引
  * @param link 分类
  */
 function readLink(link) {
-    link.link='/goods/7546';
     let url = `${config.urlPrefix}${link.link}`;
     request(url, (error, response, body) => {
         if (!error && response.statusCode == 200) {
@@ -117,9 +116,10 @@ function processData(url, id, html) {
     //----------保存图片
     $('.xs-box-list li a img').each((i, img)=>{
         let image=$(img);
-        let img_url=image.attr('data-src-md');//展示图
-        let thumb_url=image.attr('src');//缩略图
-        let img_original=image.attr('data-src-lg');//原图(用于展示大图)
+        //图片链接使用绝对路径
+        let img_url=config.urlPrefix+image.attr('data-src-md');//展示图
+        let thumb_url=config.urlPrefix+image.attr('src');//缩略图
+        let img_original=config.urlPrefix+image.attr('data-src-lg');//原图(用于展示大图)
         let imageNode={
             img_id:images.length+1,
             goods_id:node.id,
@@ -183,7 +183,7 @@ function writeSql() {
     links.forEach((node, index) => {
         // node.id = index + 1;
         // INSERT INTO `ecs_goods` VALUES ('29', '13', 'ECS000029', '意大利费列罗巧克力食品进口零食礼盒576粒整箱装结婚喜糖', '+', '103', '47', '', '0', '0.000', '456.00', '380.00', '320.00', '1476691200', '1448784000', '1', '2', '1437379200', '1448784000', '5', '巧克力,零食,甜品,甜点', '层层甄选 臻心臻意 爱的见证 巧克力让爱历久弥新 送佳人女友礼品', '<p></p>', 'images/201507/thumb_img/29_thumb_G_1437506331258.jpg', 'images/201507/goods_img/29_G_1437506331520.jpg', 'images/201507/source_img/29_G_1437506331121.jpg', '1', '', '1', '1', '0', '3', '1437506293', '100', '0', '1', '1', '1', '1', '8.4', '0', '1443566149', '0', '', '-1', '-1', '0', '0', '0', '', '0', '1', '0.00', '0', '0');
-        sql += `INSERT INTO \`ecs_goods\` VALUES ('${node.id}', '${node.cat_id}', '${node.goods_sn}', '${node.goods_name}', '+', '0', '${node.brand_id}', '', '0', '0.000', '456.00', '380.00', '320.00', '1476691200', '1448784000', '1', '2', '1437379200', '1448784000', '1', '', '${node.goods_brief}', '${node.goods_desc}', '${node.goods_thumb}', '${node.goods_img}', '${node.original_img}', '1', '', '1', '1', '0', '100', '1437506293', '100', '0', '0', '0', '0', '0', '10.0', '0', '1443566149', '0', '', '-1', '-1', '0', '0', '0', '', '0', '1', '0.00', '0', '0');${separator}`;
+        sql += `INSERT INTO \`ecs_goods\` VALUES ('${node.id}', '${node.cat_id}', '${node.goods_sn}', '${node.goods_name}', '+', '0', '${node.brand_id}', '', '1000', '50.000', '456.00', '380.00', '320.00', '1476691200', '1448784000', '1', '66', '1437379200', '1448784000', '1', '', '${node.goods_brief}', '${node.goods_desc}', '${node.goods_thumb}', '${node.goods_img}', '${node.original_img}', '1', '', '1', '1', '0', '100', '1437506293', '100', '0', '0', '0', '0', '0', '10.0', '0', '1443566149', '0', '', '-1', '-1', '0', '0', '0', '', '0', '1', '0.00', '0', '0');${separator}`;
     });
     fs.writeFileSync(config.goodsSqlFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
     //---------------商品图片
