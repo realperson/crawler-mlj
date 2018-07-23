@@ -12,5 +12,10 @@ module.exports = {
     brandFile: './data/brands.js',//商品品牌数据
     brandSqlFile: './data/brands.sql',//商品品牌数据(用于向数据库插入数据)
     errorBrandFile: './data/errorBrands.js',//商品品牌数据(出错的链接数据)
+    goodsFile: './data/goods.js',//商品数据
+    goodsSqlFile: './data/goods.sql',//商品数据(用于向数据库插入数据)
+    errorGoodsFile: './data/errorGoods.js',//商品数据(出错的链接数据)
+    imagesFile: './data/images.js',//图片数据
+    imagesSqlFile: './data/images.sql',//图片数据(用于向数据库插入数据)
     urlPrefix: 'http://www.168mlj.com' //网站地址
 };
