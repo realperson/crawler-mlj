@@ -18,7 +18,7 @@ let links = [];//数据
 let images = [];//图片数据
 let currentCount = 0;//现在获取了多少个详情的数据
 let totalCount = details.length;
-totalCount = 1;
+totalCount = 10;
 let inc = 1;//起始id
 
 //为了防止出错,限制同时发起请求的个数
@@ -75,6 +75,9 @@ function processData(url, id, html) {
         goods_name: '',
         goods_brief: '',//商品简单描述
         goods_desc: '',//商品详情
+        goods_thumb: '',//缩略图
+        goods_img: '',//展示图
+        original_img: '',//大图
         brand_id: '0',
     };
     node.goods_sn = 'JIGU' + padStart(`${node.id}`, 6, '0');//货号
@@ -111,6 +114,29 @@ function processData(url, id, html) {
     //     node.goods_desc = $('#goods-detail-description').html();
     // }
 
+    //----------保存图片
+    $('.xs-box-list li a img').each((i, img)=>{
+        let image=$(img);
+        let img_url=image.attr('data-src-md');//展示图
+        let thumb_url=image.attr('src');//缩略图
+        let img_original=image.attr('data-src-lg');//原图(用于展示大图)
+        let imageNode={
+            img_id:images.length+1,
+            goods_id:node.id,
+            img_url,
+            thumb_url,
+            img_original
+        };
+        images.push(imageNode);
+
+        //保存图片信息到商品数据中
+        if(i===0){
+            node.goods_thumb = thumb_url;
+            node.goods_img = img_url;
+            node.original_img = img_original;
+        }
+    });
+
 
     links.push(node);
     save();//保存数据
@@ -132,9 +158,11 @@ function save() {
         return a.id - b.id;
     });
     // links = distinct(links);
-    // writeSql();//写入sql文件
+    writeSql();//写入sql文件
     let linksOutput = `module.exports=${JSON.stringify(links)};`;
-    fs.writeFileSync(config.goodsFile, linksOutput);//生成品牌数据
+    fs.writeFileSync(config.goodsFile, linksOutput);//生成商品数据
+    linksOutput = `module.exports=${JSON.stringify(images)};`;
+    fs.writeFileSync(config.imagesFile, linksOutput);//生成图片数据
     if (currentCount >= totalCount) {
         if (errorIds.length > 0) {
             let errorIdsOutput = `module.exports=${JSON.stringify(errorIds)};`;
@@ -151,11 +179,19 @@ function save() {
 function writeSql() {
     let separator = '\n';
     let sql = ``;//sql数据
+    //---------------商品详情
     links.forEach((node, index) => {
-        node.id = index + 1;
-        sql += `INSERT INTO \`ecs_brand\` VALUES ('${node.id}', '${node.name}', 'no-piture.png', '', '', '', 'http://', '50', '1');${separator}`;
+        // node.id = index + 1;
+        // INSERT INTO `ecs_goods` VALUES ('29', '13', 'ECS000029', '意大利费列罗巧克力食品进口零食礼盒576粒整箱装结婚喜糖', '+', '103', '47', '', '0', '0.000', '456.00', '380.00', '320.00', '1476691200', '1448784000', '1', '2', '1437379200', '1448784000', '5', '巧克力,零食,甜品,甜点', '层层甄选 臻心臻意 爱的见证 巧克力让爱历久弥新 送佳人女友礼品', '<p></p>', 'images/201507/thumb_img/29_thumb_G_1437506331258.jpg', 'images/201507/goods_img/29_G_1437506331520.jpg', 'images/201507/source_img/29_G_1437506331121.jpg', '1', '', '1', '1', '0', '3', '1437506293', '100', '0', '1', '1', '1', '1', '8.4', '0', '1443566149', '0', '', '-1', '-1', '0', '0', '0', '', '0', '1', '0.00', '0', '0');
+        sql += `INSERT INTO \`ecs_goods\` VALUES ('${node.id}', '${node.cat_id}', '${node.goods_sn}', '${node.goods_name}', '+', '0', '${node.brand_id}', '', '0', '0.000', '456.00', '380.00', '320.00', '1476691200', '1448784000', '1', '2', '1437379200', '1448784000', '1', '', '${node.goods_brief}', '${node.goods_desc}', '${node.goods_thumb}', '${node.goods_img}', '${node.original_img}', '1', '', '1', '1', '0', '100', '1437506293', '100', '0', '0', '0', '0', '0', '10.0', '0', '1443566149', '0', '', '-1', '-1', '0', '0', '0', '', '0', '1', '0.00', '0', '0');${separator}`;
     });
     fs.writeFileSync(config.goodsSqlFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
+    //---------------商品图片
+    sql = ``;//sql数据
+    images.forEach((node, index) => {
+        sql += `INSERT INTO \`ecs_goods_gallery\` VALUES ('${node.img_id}', '${node.goods_id}', '${node.img_url}', '', '${node.thumb_url}', '${node.img_original}', '0', '0', '0');${separator}`;
+    });
+    fs.writeFileSync(config.imagesSqlFile, sql);//生成分类数据的sql代码,用于向数据库中插入分类数据
 }
 
 /**
