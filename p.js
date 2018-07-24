@@ -18,7 +18,7 @@ let links = [];//数据
 let images = [];//图片数据
 let currentCount = 0;//现在获取了多少个详情的数据
 let totalCount = details.length;
-totalCount = 10;
+// totalCount = 10;
 let inc = 1;//起始id
 
 //为了防止出错,限制同时发起请求的个数
